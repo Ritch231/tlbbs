@@ -5,8 +5,21 @@ import time
 from datetime import datetime
 import logging
 
+# 获取当前工作目录
+current_dir = os.getcwd()
+
+# 构建文件路径
+# log_file = os.path.join(current_dir, 'logs', 'app.log')
+
+log_dir = os.path.join(current_dir, 'logs')
+log_file = os.path.join(log_dir, 'app.log')
+
+# 创建目录（如果不存在）
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
 # 设置日志级别和输出格式
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 # 将内容写入文件
@@ -21,7 +34,7 @@ def search_multiline_text(filename, search_text):
     if not os.path.isfile(filename):
         with open(filename, 'w') as file:
             file.write('')
-        print(f'创建文件 {filename}')
+        logging.info(f'创建文件 {filename}')
 
     with open(filename, 'r') as file:
         lines = file.readlines()
@@ -36,14 +49,21 @@ def search_multiline_text(filename, search_text):
 
     return False
 
+
 def tlbbs():
-    # 写出日志文件
-    filename = 'log.txt'
+    # 写出维护日志文件
+    # 获取当前路径
+    current_path = os.getcwd()
+    # 构建log.txt文件的完整路径和名称
+    tlbbs_log_filename = "tlbbs.txt"
+    tlbbs_log_filepath = os.path.join(current_path, 'logs', tlbbs_log_filename)
+    filename = tlbbs_log_filepath
+
     # 机器人的 token
     TOKEN = '2122878220:AAHVc1j3r3bfIPfb9Hmqtw3OZNFVUcbTMaw'
     # TOKEN = '1773760234:AAHGJG-6v9LOd1ah_O5ou7_lHmK5SWvBlhw'
     # 聊天的 ID
-    CHAT_ID = '991050819'
+    CHAT_ID = '-1001887080842'
 
     # 发送请求等url
     url = 'http://bbs.tl.changyou.com/forum.php?mod=forumdisplay&fid=504'
@@ -107,7 +127,7 @@ def tlbbs():
                 flag = 1
 
                 # TG消息内容
-                MESSAGE = match[1] + new_result + '------------------------------------------' + '\n'
+                MESSAGE = match[1] + new_result + '------------------------------------' + '\n'
 
                 # 搜索多行文本
                 search_text = MESSAGE
@@ -122,8 +142,8 @@ def tlbbs():
                     # 发送5次
                     for i in range(5):
                         # 推送TG消息
-                        r = requests.post(f'https://api.telegram.org/bot{TOKEN}/sendMessage',
-                                          json={"chat_id": CHAT_ID, "text": MESSAGE}, proxies=proxies)
+                        # r = requests.post(f'https://api.telegram.org/bot{TOKEN}/sendMessage',json={"chat_id": CHAT_ID, "text": MESSAGE}, proxies=proxies)
+                        r = requests.post(f'https://api.telegram.org/bot{TOKEN}/sendMessage',json={"chat_id": CHAT_ID, "text": MESSAGE})
 
                         if r.status_code == 200:
                             print("消息发送成功！")
